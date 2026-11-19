@@ -73,7 +73,11 @@ export const Commands = [
         args: "<message>",
         description: _td("slash_command|spoiler"),
         runFn: function (cli, roomId, threadId, message = "") {
-            return successSync(ContentHelpers.makeHtmlMessage(message, `<span data-mx-spoiler>${message}</span>`));
+            // Render markdown inside the spoiler; plain text has no HTML form, so fall back to the raw message.
+            const html = htmlSerializeFromMdIfNeeded(message, { forceHTML: false });
+            return successSync(
+                ContentHelpers.makeHtmlMessage(message, `<span data-mx-spoiler>${html ?? message}</span>`),
+            );
         },
         category: CommandCategories.messages,
     }),
